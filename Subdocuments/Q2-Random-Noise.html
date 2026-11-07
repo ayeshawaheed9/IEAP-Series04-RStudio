@@ -540,6 +540,25 @@ F-statistic: 1.647e+04 on 1 and 98 DF,  p-value: &lt; 2.2e-16</code></pre>
 </div>
 <p>By repeating the experiment, I can reduce the influence of one particular random sample and observe the general effect of noise more clearly.</p>
 </section>
+<section id="draw-conclusions" class="level3">
+<h3 class="anchored" data-anchor-id="draw-conclusions">3. Draw Conclusions</h3>
+<p>After comparing the numerical results with my initial expectations, I found that most of them were confirmed. However, the repeated simulations helped me understand the effect of noise more clearly.</p>
+<p><strong>Were my expectations confirmed?</strong></p>
+<p>My expectation that the slope and intercept would remain close to their theoretical values was confirmed. Across the 500 simulations, the average slope remained close to 2, changing only from 2.001 to 1.997 across the lowest and highest noise levels. The average intercept also remained close to 10.</p>
+<p>I also expected prediction quality to decrease as noise increased, and the results clearly confirmed this. The average R-squared decreased from 0.993 to 0.792, while RMSE increased from 4.970 to 29.745.</p>
+<p><strong>What differences did I observe between the three models?</strong></p>
+<p>The main difference was the amount of variation around the regression line.</p>
+<ul>
+<li><strong>Noise SD = 5:</strong> The model performed very well, with an average R-squared of 0.993 and an RMSE of 4.970. The observations remained close to the theoretical relationship.</li>
+<li><strong>Noise SD = 15:</strong> The observations became more scattered. R-squared decreased to 0.938 and RMSE increased to 14.925.</li>
+<li><strong>Noise SD = 30:</strong> This model had the largest amount of noise. R-squared decreased further to 0.792, and RMSE reached 29.745.</li>
+</ul>
+<p>Another difference was the variability of the estimated slope. Its standard deviation increased from 0.017 at noise level 5 to 0.104 at noise level 30. This shows that the estimated slope became less stable when more noise was added.</p>
+<p><strong>What can I conclude about the impact of random noise?</strong></p>
+<p>From this experiment, I conclude that random noise does not necessarily change the underlying linear relationship or systematically shift the average regression estimates away from their theoretical values. However, it makes the estimates less precise and reduces the predictive performance of the model.</p>
+<p>An important point I noticed is that the average slope and intercept remained almost unchanged across the simulations, but the prediction errors increased considerably. This shows that estimating the general relationship correctly and predicting individual observations accurately are not the same thing.</p>
+<p>Overall, my initial expectations were mostly confirmed. Higher random noise makes the data more difficult to predict, reduces the proportion of variation explained by the regression model and increases the variability of the estimated coefficients.</p>
+</section>
 </section>
 
 </main>

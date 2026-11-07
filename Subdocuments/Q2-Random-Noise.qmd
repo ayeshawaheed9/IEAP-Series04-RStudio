@@ -283,3 +283,33 @@ kable(
 ```
 
 By repeating the experiment, I can reduce the influence of one particular random sample and observe the general effect of noise more clearly.
+
+
+### 3. Draw Conclusions
+
+After comparing the numerical results with my initial expectations, I found that most of them were confirmed. However, the repeated simulations helped me understand the effect of noise more clearly.
+
+**Were my expectations confirmed?**
+
+My expectation that the slope and intercept would remain close to their theoretical values was confirmed. Across the 500 simulations, the average slope remained close to 2, changing only from 2.001 to 1.997 across the lowest and highest noise levels. The average intercept also remained close to 10.
+
+I also expected prediction quality to decrease as noise increased, and the results clearly confirmed this. The average R-squared decreased from 0.993 to 0.792, while RMSE increased from 4.970 to 29.745.
+
+**What differences did I observe between the three models?**
+
+The main difference was the amount of variation around the regression line.
+
+- **Noise SD = 5:** The model performed very well, with an average R-squared of 0.993 and an RMSE of 4.970. The observations remained close to the theoretical relationship.
+- **Noise SD = 15:** The observations became more scattered. R-squared decreased to 0.938 and RMSE increased to 14.925.
+- **Noise SD = 30:** This model had the largest amount of noise. R-squared decreased further to 0.792, and RMSE reached 29.745.
+
+Another difference was the variability of the estimated slope. Its standard deviation increased from 0.017 at noise level 5 to 0.104 at noise level 30. This shows that the estimated slope became less stable when more noise was added.
+
+**What can I conclude about the impact of random noise?**
+
+From this experiment, I conclude that random noise does not necessarily change the underlying linear relationship or systematically shift the average regression estimates away from their theoretical values. However, it makes the estimates less precise and reduces the predictive performance of the model.
+
+An important point I noticed is that the average slope and intercept remained almost unchanged across the simulations, but the prediction errors increased considerably. This shows that estimating the general relationship correctly and predicting individual observations accurately are not the same thing.
+
+Overall, my initial expectations were mostly confirmed. Higher random noise makes the data more difficult to predict, reduces the proportion of variation explained by the regression model and increases the variability of the estimated coefficients.
+

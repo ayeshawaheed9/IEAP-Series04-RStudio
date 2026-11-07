@@ -218,3 +218,64 @@ print(lapply(results_7m$models, coef))
 In the three-hour recording, the linear model estimates a decline of about 0.30 bpm per minute. The mono-exponential model estimates a faster initial decline that slows over time, approaching an asymptotic heart rate of about 64 bpm. The bi-exponential model estimates two decline rates, but its asymptote is about 42 bpm, well below the last observed heart rate of 64 bpm, so that long-term estimate may be unreliable.
 
 In the 7.5-minute recording, the linear model estimates a decline of about 2.54 bpm per minute. The mono-exponential model approaches about 130 bpm, close to the final observed value of 129 bpm. The bi-exponential fit estimates an asymptote near 30 bpm, which is far below the observed range; this suggests its parameters may be poorly determined for this short recording.
+
+
+### Fitted curves and residual analysis
+
+```{r q32-fitted-curves, fig-cap="Observed heart rate and fitted models for each recording"}
+diag_all <- rbind(
+  results_3h$diagnostics,
+  results_7m$diagnostics
+)
+
+ggplot(diag_all, aes(x = time_min)) +
+  geom_line(aes(y = observed_hr), colour = "grey45", linewidth = 0.4) +
+  geom_line(
+    aes(y = predicted_hr, colour = model),
+    linewidth = 0.8
+  ) +
+  facet_wrap(~ recording, scales = "free_x") +
+  labs(
+    x = "Time since recording began (minutes)",
+    y = "Heart rate (bpm)",
+    colour = "Model"
+  ) +
+  theme_minimal()
+```
+In both recordings, the bi-exponential curve follows the observed decline more closely than the linear curve, which cannot represent the changing rate of decline. The fitted curves are similar for the 7.5-minute recording, so the comparison statistics and residuals are needed to judge whether the more complex model is justified.
+
+
+```{r q32-residuals, fig-cap="Residuals over time for each fitted model"}
+ggplot(diag_all, aes(x = time_min, y = residual)) +
+  geom_point(alpha = 0.35, size = 0.7) +
+  geom_hline(yintercept = 0, linetype = "dashed") +
+  facet_grid(recording ~ model, scales = "free_x") +
+  labs(
+    x = "Time since recording began (minutes)",
+    y = "Observed minus predicted heart rate (bpm)"
+  ) +
+  theme_minimal()
+```
+Residuals for the 7.5-minute recording are generally centred around zero. In the three-hour recording, residuals show more variation and some visible patterns, so even the best-fitting model does not capture every fluctuation. This is a limitation of the fit, particularly given the recording’s noise and gaps.
+
+
+### Lowest-AICc model
+
+```{r q32-best-models}
+best_models <- do.call(
+  rbind,
+  lapply(split(model_comparison, model_comparison$recording), function(x) {
+    x <- x[!is.na(x$AICc), ]
+    x[which.min(x$AICc), ]
+  })
+)
+
+kable(
+  best_models[, c("recording", "model", "AICc", "RMSE_bpm", "R_squared")],
+  digits = 3,
+  caption = "Lowest-AICc model in each recording"
+)
+```
+
+The bi-exponential model had the lowest AICc in both recordings, so it was the best-supported model among those tested. Its RMSE was 3.114 bpm for the 7.5-minute recording and 7.944 bpm for the three-hour recording. The higher error in the longer recording reflects its noisier, more variable data; model choice should also consider the residual plots and whether the fitted parameters are physiologically plausible.
+

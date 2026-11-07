@@ -72,3 +72,18 @@ kable(
 ```
 The three-hour recording contains 2,456 pulse observations over approximately 190 minutes. Heart rate falls from 130 bpm at the first observation to 64 bpm at the last. The 7.5-minute recording contains 91 observations over approximately 7.4 minutes, with heart rate falling from 155 to 129 bpm. Both recordings therefore show a decrease in heart rate across the observed period, but they differ greatly in duration, number of observations, and starting heart rate. We use the timestamps to preserve the recordings’ actual time scale, including any gaps. These summary values describe the recorded intervals; because the datasets do not label the exact start and end of recovery, they do not by themselves identify the full physiological recovery period.
 
+
+### Observed heart rate over time
+
+```{r q32-observed-plot, fig-cap="Observed heart rate in the two Aidlab recordings"}
+ggplot(pulse_all, aes(x = time_min, y = hr_bpm)) +
+  geom_line(linewidth = 0.4) +
+  facet_wrap(~ recording, scales = "free_x") +
+  labs(
+    x = "Time since recording began (minutes)",
+    y = "Heart rate (bpm)"
+  ) +
+  theme_minimal()
+```
+Both recordings show an overall decrease in heart rate, but their patterns differ. In the 7.5-minute recording, heart rate falls quickly at first and then fluctuates around a slower decline. In the three-hour recording, heart rate also drops quickly early on, followed by a longer, noisy decline. These patterns suggest that a straight-line model may not capture the changing rate of decline well; we compare the fitted models next.
+

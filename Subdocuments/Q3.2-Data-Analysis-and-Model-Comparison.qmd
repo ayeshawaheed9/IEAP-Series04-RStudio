@@ -87,3 +87,134 @@ ggplot(pulse_all, aes(x = time_min, y = hr_bpm)) +
 ```
 Both recordings show an overall decrease in heart rate, but their patterns differ. In the 7.5-minute recording, heart rate falls quickly at first and then fluctuates around a slower decline. In the three-hour recording, heart rate also drops quickly early on, followed by a longer, noisy decline. These patterns suggest that a straight-line model may not capture the changing rate of decline well; we compare the fitted models next.
 
+The datasets do not label the exact end of exercise or the start of recovery. We therefore use the recorded falling-heart-rate intervals as the available post-exercise recovery periods: from the beginning to the end of each pulse recording. This is an approximation, especially for the three-hour recording, which covers a much longer transition from effort toward rest. The fitted models describe these observed intervals, not a precisely identified recovery phase.
+
+
+### Model fitting and numerical comparison
+
+We fit a linear model, a mono-exponential decay, and a bi-exponential decay. The exponential models estimate an asymptotic heart rate. We compare AICc, RMSE, explained variance, model coefficients, and residual plots. A lower AICc and RMSE indicate a better statistical fit in this comparison, but model choice also depends on residual structure, complexity, and plausible parameter estimates.
+
+```{r q32-models, message=FALSE, warning=FALSE}
+fit_recovery_models <- function(data, recording_name) {
+  data <- data[order(data$time_min), ]
+
+  if (nrow(data) < 8) {
+    stop(paste(recording_name, "has too few observations for model fitting."))
+  }
+
+  hr_start <- max(data$hr_bpm, na.rm = TRUE)
+  hr_end <- median(
+    tail(data$hr_bpm, max(3, floor(nrow(data) * 0.1))),
+    na.rm = TRUE
+  )
+  amplitude <- max(1, hr_start - hr_end)
+
+  linear <- lm(hr_bpm ~ time_min, data = data)
+
+  mono <- nlsLM(
+    hr_bpm ~ C + A * exp(-k * time_min),
+    data = data,
+    start = list(C = hr_end, A = amplitude, k = 0.1),
+    lower = c(C = 30, A = 0, k = 0.00001),
+    upper = c(C = hr_start, A = 250, k = 10),
+    control = nls.lm.control(maxiter = 2000)
+  )
+
+  bi <- tryCatch(
+    nlsLM(
+      hr_bpm ~ C + A1 * exp(-k1 * time_min) + A2 * exp(-k2 * time_min),
+      data = data,
+      start = list(
+        C = hr_end,
+        A1 = 0.65 * amplitude,
+        k1 = 0.5,
+        A2 = 0.35 * amplitude,
+        k2 = 0.05
+      ),
+      lower = c(C = 30, A1 = 0, k1 = 0.00001, A2 = 0, k2 = 0.00001),
+      upper = c(C = hr_start, A1 = 250, k1 = 10, A2 = 250, k2 = 10),
+      control = nls.lm.control(maxiter = 4000)
+    ),
+    error = function(e) NULL
+  )
+
+  models <- list(
+    Linear = linear,
+    `Mono-exponential` = mono
+  )
+  if (!is.null(bi)) {
+    models$`Bi-exponential` <- bi
+  }
+
+  statistics <- do.call(rbind, lapply(names(models), function(model_name) {
+    model <- models[[model_name]]
+    predicted <- as.numeric(predict(model, newdata = data))
+    residual <- data$hr_bpm - predicted
+    n <- nrow(data)
+    parameter_count <- length(coef(model))
+    aic <- AIC(model)
+
+    aicc <- if (n > parameter_count + 1) {
+      aic + (2 * parameter_count * (parameter_count + 1)) /
+        (n - parameter_count - 1)
+    } else {
+      NA_real_
+    }
+
+    data.frame(
+      recording = recording_name,
+      model = model_name,
+      RMSE_bpm = sqrt(mean(residual^2)),
+      R_squared = 1 - sum(residual^2) /
+        sum((data$hr_bpm - mean(data$hr_bpm))^2),
+      AICc = aicc
+    )
+  }))
+
+  diagnostics <- do.call(rbind, lapply(names(models), function(model_name) {
+    model <- models[[model_name]]
+    predicted <- as.numeric(predict(model, newdata = data))
+
+    data.frame(
+      time_min = data$time_min,
+      observed_hr = data$hr_bpm,
+      predicted_hr = predicted,
+      residual = data$hr_bpm - predicted,
+      model = model_name,
+      recording = recording_name
+    )
+  }))
+
+  list(
+    models = models,
+    statistics = statistics,
+    diagnostics = diagnostics
+  )
+}
+
+results_3h <- fit_recovery_models(pulse_3h, "Three-hour recording")
+results_7m <- fit_recovery_models(pulse_7m, "7.5-minute recording")
+
+model_comparison <- rbind(
+  results_3h$statistics,
+  results_7m$statistics
+)
+
+kable(
+  model_comparison,
+  digits = 3,
+  caption = "Numerical comparison of the fitted models"
+)
+
+# Print model coefficients so the estimated decay rates and asymptotes
+# can be reported and assessed for plausibility.
+cat("Three-hour recording model coefficients:\n")
+print(lapply(results_3h$models, coef))
+
+cat("\n7.5-minute recording model coefficients:\n")
+print(lapply(results_7m$models, coef))
+```
+
+In the three-hour recording, the linear model estimates a decline of about 0.30 bpm per minute. The mono-exponential model estimates a faster initial decline that slows over time, approaching an asymptotic heart rate of about 64 bpm. The bi-exponential model estimates two decline rates, but its asymptote is about 42 bpm, well below the last observed heart rate of 64 bpm, so that long-term estimate may be unreliable.
+
+In the 7.5-minute recording, the linear model estimates a decline of about 2.54 bpm per minute. The mono-exponential model approaches about 130 bpm, close to the final observed value of 129 bpm. The bi-exponential fit estimates an asymptote near 30 bpm, which is far below the observed range; this suggests its parameters may be poorly determined for this short recording.

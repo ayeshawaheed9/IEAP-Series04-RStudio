@@ -1,0 +1,42 @@
+---
+title: "IEAP RStudio Series 04"
+author:
+  - "Ayesha Waheed"
+  - "Albatoul Ahmad"
+  - "Charles Sam Deemua"
+date: "7 November 2026"
+format: "pdf"
+---
+
+# Introduction
+
+This report investigates the influence of random noise on linear regression and explores mathematical models describing heart rate recovery after physical exercise.
+
+The assignment is divided into two main investigations:
+
+1. A numerical experiment examining how different levels of random noise affect linear regression.
+2. An analysis of physiological recordings to identify appropriate mathematical models for heart rate recovery.
+
+The analyses combine statistical modelling, graphical representations, and physiological interpretation.
+
+# Question 2: Effect of Random Noise on Linear Regression
+
+{{< include Subdocuments/Q2-Random-Noise.qmd >}}
+
+# Question 3: Mathematical Modelling of Heart Rate Recovery
+
+## 3.1 Scientific Literature and Initial Hypotheses
+
+{{< include Subdocuments/Q3.1-Literature-Review.qmd >}}
+
+## 3.2 Data Exploration and Mathematical Modelling
+
+{{< include Subdocuments/Q3.2-Data-Analysis.qmd >}}
+
+## 3.3 Model Comparison and Conclusions
+
+{{< include Subdocuments/Q3.3-Model-Comparison.qmd >}}
+
+# References
+
+The scientific references used throughout this report are listed below.

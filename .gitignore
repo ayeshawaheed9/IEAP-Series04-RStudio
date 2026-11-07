@@ -1,0 +1,33 @@
+# RStudio project files
+.Rproj.user/
+.Rhistory
+.RData
+.Ruserdata
+*.Rproj
+
+# Quarto temporary files and cache
+*_files/
+*_cache/
+.quarto/
+_freeze/
+
+# R package and build files
+.Rcheck/
+*.tar.gz
+*.Rout
+
+# Operating system files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Temporary and backup files
+*.tmp
+*.bak
+*.swp
+*~
+
+# Data files (if they contain large or sensitive data)
+*.csv
+*.xlsx
+*.zip

@@ -12,3 +12,274 @@ Before performing the experiment, I expect the following:
 
 My main expectation is that adding noise should not change the theoretical relationship between x and y, but it can make that relationship more difficult to estimate from the observed data.
 
+### 2. Implement and investigate
+
+
+I will use the following linear relationship:
+
+\[
+y = 10 + 2x
+\]
+
+The theoretical intercept is therefore 10 and the theoretical slope is 2.
+
+I will generate 100 observations with x values ranging from 0 to 100. Then, I will add three different levels of random noise.
+
+```{r}
+library(tidyverse)
+library(knitr)
+
+set.seed(123)
+
+# Generate the same x values for all datasets
+x <- seq(0, 100, length.out = 100)
+
+# Original linear relationship
+true_intercept <- 10
+true_slope <- 2
+
+# Generate one random noise pattern
+random_noise <- rnorm(100)
+
+# Three different noise levels
+noise_levels <- c(5, 15, 30)
+
+# Create the three datasets
+data <- map_dfr(noise_levels, function(noise_sd) {
+
+  tibble(
+    x = x,
+    y = true_intercept + true_slope * x +
+      random_noise * noise_sd,
+    noise_level = paste("Noise SD =", noise_sd)
+  )
+
+})
+
+head(data)
+```
+
+Here, the standard deviation of the noise is changed from 5 to 15 and then to 30.
+
+I used the same random noise pattern for all three datasets, but multiplied it by different values. This allows me to compare the effect of increasing noise without changing the underlying pattern of the random variation.
+
+### 3. Visualising the Datasets
+
+Before fitting the regression models, I will first look at the three datasets to understand how the observations are distributed around the theoretical relationship.
+
+```{r}
+ggplot(data, aes(x = x, y = y)) +
+  geom_point(alpha = 0.65, colour = "steelblue") +
+  geom_abline(
+    intercept = true_intercept,
+    slope = true_slope,
+    colour = "red",
+    linewidth = 1,
+    linetype = "dashed"
+  ) +
+  facet_wrap(~ noise_level) +
+  labs(
+    title = "Effect of Random Noise on the Data",
+    subtitle = "The dashed line represents the original linear relationship",
+    x = "X",
+    y = "Y"
+  ) +
+  theme_minimal()
+```
+
+From these graphs, I will observe whether the points become more spread out around the original line as the noise level increases.
+
+The dashed line is the same in all three graphs because the theoretical relationship has not changed.
+
+### 4. Fitting Linear Regression Models
+
+Next, I will fit a separate linear regression model to each dataset using the `lm()` function.
+
+```{r}
+models <- data %>%
+  group_by(noise_level) %>%
+  group_map(~ lm(y ~ x, data = .x))
+
+names(models) <- unique(data$noise_level)
+
+# Display the regression summaries
+summary(models[[1]])
+summary(models[[2]])
+summary(models[[3]])
+```
+
+The estimated regression equations can be compared with the original equation:
+
+\[
+y = 10 + 2x
+\]
+
+I will pay particular attention to whether the estimated coefficients remain close to 10 and 2.
+
+### 5. Comparing the Regression Results
+
+To make the comparison easier, I will extract the intercept, slope, R-squared and RMSE from each model.
+
+RMSE (Root Mean Squared Error) measures the average size of the prediction errors. A lower RMSE indicates better prediction accuracy.
+
+```{r}
+# Calculate RMSE for each model
+rmse <- function(model) {
+  sqrt(mean(residuals(model)^2))
+}
+
+# Create a comparison table
+model_comparison <- map_dfr(seq_along(models), function(i) {
+
+  model <- models[[i]]
+  model_summary <- summary(model)
+
+  tibble(
+    Noise_Level = names(models)[i],
+    Intercept = coef(model)[1],
+    Slope = coef(model)[2],
+    R_squared = model_summary$r.squared,
+    RMSE = rmse(model)
+  )
+
+})
+
+kable(
+  model_comparison,
+  digits = 3,
+  caption = "Comparison of Linear Regression Models"
+)
+```
+
+I will use this table to check how the estimated coefficients and prediction performance change with increasing noise.
+
+In particular, I will compare the estimated slope with the theoretical slope of 2 and the estimated intercept with the theoretical intercept of 10.
+
+### 6. Comparing the Fitted Regression Lines
+
+I will now plot the three fitted regression lines together with the original theoretical line.
+
+```{r}
+prediction_data <- map_dfr(seq_along(models), function(i) {
+
+  model <- models[[i]]
+
+  tibble(
+    x = x,
+    predicted_y = predict(model),
+    noise_level = names(models)[i]
+  )
+
+})
+
+ggplot() +
+  geom_point(
+    data = data,
+    aes(x = x, y = y),
+    alpha = 0.25,
+    colour = "grey50"
+  ) +
+  geom_line(
+    data = prediction_data,
+    aes(x = x, y = predicted_y, colour = noise_level),
+    linewidth = 1
+  ) +
+  geom_abline(
+    intercept = true_intercept,
+    slope = true_slope,
+    colour = "black",
+    linetype = "dashed",
+    linewidth = 1
+  ) +
+  labs(
+    title = "Comparison of Fitted Regression Lines",
+    subtitle = "The dashed line represents the theoretical relationship",
+    x = "X",
+    y = "Predicted Y",
+    colour = "Noise level"
+  ) +
+  theme_minimal()
+```
+
+This graph will help me see whether the fitted regression lines remain close to the theoretical line or move away from it as noise increases.
+
+### 7. Interpretation and Discussion
+
+After obtaining the numerical results and graphs, I will compare them with my initial expectations.
+
+**Effect on slope and intercept**
+
+The estimated slope and intercept can vary slightly between the models. I will check whether these differences are small or whether the estimates become further from their theoretical values as noise increases.
+
+It is important to remember that the underlying relationship is still the same. A difference in the estimated coefficients does not necessarily mean that the original relationship has changed.
+
+**Effect on prediction accuracy**
+
+I will examine the RMSE values to determine whether prediction errors increase with noise. I will also compare R-squared values to see how much of the variation in the observations is explained by the regression model.
+
+**Comparison with initial expectations**
+
+I will complete this interpretation using the actual values from the comparison table.
+
+| Initial expectation | What to check in the results |
+|---|---|
+| Slope remains close to 2 | Compare estimated slopes |
+| Intercept remains close to 10 | Compare estimated intercepts |
+| Prediction accuracy decreases | Compare RMSE |
+| Explained variance decreases | Compare R-squared |
+
+### 9. Improving the Experiment
+
+One limitation of this experiment is that it uses only one generated random noise pattern. The estimated slope and intercept may therefore be influenced by the particular random values selected.
+
+To obtain more reliable conclusions, I think it would be better to repeat the experiment many times for each noise level.
+
+For example, I can generate 500 datasets for each noise level and calculate the average slope, average intercept, R-squared and RMSE. This would help determine whether the results observed in the first experiment are consistent or mainly due to one random sample.
+
+```{r}
+set.seed(456)
+
+n_simulations <- 500
+
+simulation_results <- map_dfr(noise_levels, function(noise_sd) {
+
+  map_dfr(seq_len(n_simulations), function(i) {
+
+    simulated_y <- true_intercept +
+      true_slope * x +
+      rnorm(length(x), mean = 0, sd = noise_sd)
+
+    simulated_model <- lm(simulated_y ~ x)
+
+    tibble(
+      Intercept = coef(simulated_model)[1],
+      Slope = coef(simulated_model)[2],
+      R_squared = summary(simulated_model)$r.squared,
+      RMSE = rmse(simulated_model)
+    )
+
+  }) %>%
+    mutate(Noise_SD = noise_sd)
+
+})
+
+# Average results for each noise level
+simulation_summary <- simulation_results %>%
+  group_by(Noise_SD) %>%
+  summarise(
+    Mean_Intercept = mean(Intercept),
+    Mean_Slope = mean(Slope),
+    Mean_R_squared = mean(R_squared),
+    Mean_RMSE = mean(RMSE),
+    SD_Slope = sd(Slope),
+    .groups = "drop"
+  )
+
+kable(
+  simulation_summary,
+  digits = 3,
+  caption = "Average Results Across 500 Simulations"
+)
+```
+
+By repeating the experiment, I can reduce the influence of one particular random sample and observe the general effect of noise more clearly.

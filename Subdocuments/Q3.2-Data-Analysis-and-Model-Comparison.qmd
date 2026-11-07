@@ -1,0 +1,12 @@
+## 3.2 Data analysis and model comparison
+
+### Data preparation
+
+The Aidlab pulse files contain heart rate in beats per minute and timestamps in Unix milliseconds. We convert the timestamps to minutes since each recording began. We retain the original time gaps and do not interpolate missing observations. Because the recordings do not provide labelled recovery start and end times, we analyse the falling-heart-rate interval visible in each supplied recording.
+
+```{r}
+library(minpack.lm)
+library(ggplot2)
+library(knitr)
+```
+

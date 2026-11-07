@@ -10,3 +10,65 @@ library(ggplot2)
 library(knitr)
 ```
 
+```{r}
+find_repo_root <- function(start = getwd()) {
+  path <- normalizePath(start, winslash = "/", mustWork = TRUE)
+
+  repeat {
+    if (file.exists(file.path(path, "IEAP-Series04-RStudio.qmd"))) {
+      return(path)
+    }
+
+    parent <- dirname(path)
+    if (identical(parent, path)) {
+      stop("Could not find the repository root.")
+    }
+    path <- parent
+  }
+}
+
+repo_root <- find_repo_root()
+
+read_pulse <- function(folder_name) {
+  file_path <- file.path(repo_root, "data", folder_name, "pulse.csv")
+  pulse <- read.csv(file_path)
+
+  if (!all(c("timestamp", "value") %in% names(pulse))) {
+    stop(paste("Expected timestamp and value columns in", file_path))
+  }
+
+  pulse$timestamp <- as.numeric(pulse$timestamp)
+  pulse$value <- as.numeric(pulse$value)
+  pulse <- pulse[complete.cases(pulse[, c("timestamp", "value")]), ]
+  pulse <- pulse[order(pulse$timestamp), ]
+
+  pulse$time_min <- (pulse$timestamp - min(pulse$timestamp)) / 60000
+  pulse$hr_bpm <- pulse$value
+
+  pulse[, c("time_min", "hr_bpm")]
+}
+
+pulse_3h <- read_pulse("cardio_recovery_3h10m")
+pulse_7m <- read_pulse("cardio_recovery_7m30s")
+
+pulse_3h$recording <- "Three-hour recording"
+pulse_7m$recording <- "7.5-minute recording"
+pulse_all <- rbind(pulse_3h, pulse_7m)
+
+kable(
+  data.frame(
+    Recording = c("Three-hour recording", "7.5-minute recording"),
+    Observations = c(nrow(pulse_3h), nrow(pulse_7m)),
+    Duration_minutes = c(
+      round(max(pulse_3h$time_min), 2),
+      round(max(pulse_7m$time_min), 2)
+    ),
+    First_HR_bpm = c(pulse_3h$hr_bpm[1], pulse_7m$hr_bpm[1]),
+    Last_HR_bpm = c(tail(pulse_3h$hr_bpm, 1), tail(pulse_7m$hr_bpm, 1))
+  ),
+  digits = 2,
+  caption = "Pulse data included in the analysis"
+)
+```
+The three-hour recording contains 2,456 pulse observations over approximately 190 minutes. Heart rate falls from 130 bpm at the first observation to 64 bpm at the last. The 7.5-minute recording contains 91 observations over approximately 7.4 minutes, with heart rate falling from 155 to 129 bpm. Both recordings therefore show a decrease in heart rate across the observed period, but they differ greatly in duration, number of observations, and starting heart rate. We use the timestamps to preserve the recordings’ actual time scale, including any gaps. These summary values describe the recorded intervals; because the datasets do not label the exact start and end of recovery, they do not by themselves identify the full physiological recovery period.
+

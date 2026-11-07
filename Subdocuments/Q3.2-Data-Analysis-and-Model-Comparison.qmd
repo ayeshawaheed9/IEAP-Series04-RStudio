@@ -1,4 +1,3 @@
-## 3.2 Data analysis and model comparison
 
 ### Data preparation
 
@@ -75,7 +74,9 @@ The three-hour recording contains 2,456 pulse observations over approximately 19
 
 ### Observed heart rate over time
 
-```{r q32-observed-plot, fig-cap="Observed heart rate in the two Aidlab recordings"}
+```{r}
+#| label: q32-observed-plot
+#| fig-cap: "Observed heart rate in the two Aidlab recordings"
 ggplot(pulse_all, aes(x = time_min, y = hr_bpm)) +
   geom_line(linewidth = 0.4) +
   facet_wrap(~ recording, scales = "free_x") +
@@ -222,7 +223,9 @@ In the 7.5-minute recording, the linear model estimates a decline of about 2.54 
 
 ### Fitted curves and residual analysis
 
-```{r q32-fitted-curves, fig-cap="Observed heart rate and fitted models for each recording"}
+```{r}
+#| label: q32-fitted-curves
+#| fig-cap: "Observed heart rate and fitted models for each recording"
 diag_all <- rbind(
   results_3h$diagnostics,
   results_7m$diagnostics
@@ -245,7 +248,9 @@ ggplot(diag_all, aes(x = time_min)) +
 In both recordings, the bi-exponential curve follows the observed decline more closely than the linear curve, which cannot represent the changing rate of decline. The fitted curves are similar for the 7.5-minute recording, so the comparison statistics and residuals are needed to judge whether the more complex model is justified.
 
 
-```{r q32-residuals, fig-cap="Residuals over time for each fitted model"}
+```{r}
+#| label: q32-residuals
+#| fig-cap: "Residuals over time for each fitted model"
 ggplot(diag_all, aes(x = time_min, y = residual)) +
   geom_point(alpha = 0.35, size = 0.7) +
   geom_hline(yintercept = 0, linetype = "dashed") +
@@ -261,7 +266,8 @@ Residuals for the 7.5-minute recording are generally centred around zero. In the
 
 ### Lowest-AICc model
 
-```{r q32-best-models}
+```{r}
+#| label: q32-best-models
 best_models <- do.call(
   rbind,
   lapply(split(model_comparison, model_comparison$recording), function(x) {

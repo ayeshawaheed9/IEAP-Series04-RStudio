@@ -6,6 +6,8 @@ author:
   - "Charles Sam Deemua"
 date: "7 November 2026"
 format: "pdf"
+bibliography: references.bib
+csl: apa.csl
 ---
 
 # Introduction
@@ -40,3 +42,6 @@ The analyses combine statistical modelling, graphical representations, and physi
 # References
 
 The scientific references used throughout this report are listed below.
+
+::: {#refs}
+:::

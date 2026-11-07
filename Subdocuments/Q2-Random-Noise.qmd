@@ -1,0 +1,14 @@
+
+## Question 2: How Does Random Noise Affect Linear Regression?
+
+### 1. Formulate your expectations
+
+Before performing the experiment, I expect the following:
+
+- **Slope:** Since the underlying relationship does not change, I expect the estimated slope to remain close to the original value. However, it may vary slightly because of random noise.
+- **Intercept:** I also expect the estimated intercept to remain close to the original intercept, although it may not be exactly the same in all three cases.
+- **Prediction quality:** With a small amount of noise, the regression line should describe the observations quite well. As noise increases, the predictions should become less accurate.
+- **Explained variance (R-squared):** I expect R-squared to decrease as the noise increases because the linear relationship will explain a smaller proportion of the total variation in the data.
+
+My main expectation is that adding noise should not change the theoretical relationship between x and y, but it can make that relationship more difficult to estimate from the observed data.
+

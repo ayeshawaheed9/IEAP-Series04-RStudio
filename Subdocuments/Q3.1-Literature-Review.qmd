@@ -1,0 +1,116 @@
+---
+title: "Question 3.1: Finding a mathematical model for heart rate recovery after exercise"
+subtitle: "Step 1 – Predictions from the scientific literature"
+format:
+  html:
+    toc: true
+    theme: cosmo
+    embed-resources: true
+references:
+  - id: bartels2018
+    type: article-journal
+    title: "Heart rate recovery fast-to-slow phase transition: Influence of physical fitness and exercise intensity"
+    author:
+      - {family: Bartels, given: R.}
+      - {family: Prodel, given: E.}
+      - {family: Laterza, given: M. C.}
+      - {family: Lima, given: J. R. P., non-dropping-particle: de}
+      - {family: Peçanha, given: T.}
+    container-title: Annals of Noninvasive Electrocardiology
+    volume: 23
+    issue: 3
+    page: e12521
+    issued: {date-parts: [[2018]]}
+    DOI: 10.1111/anec.12521
+  - id: bartelsferreira2015
+    type: article-journal
+    title: "Can a first-order exponential decay model fit heart rate recovery after resistance exercise?"
+    author:
+      - {family: Bartels-Ferreira, given: R.}
+      - {family: Sousa, given: É. D., non-dropping-particle: de}
+      - {family: Trevizani, given: G. A.}
+      - {family: Silva, given: L. P.}
+      - {family: Nakamura, given: F. Y.}
+      - {family: Forjaz, given: C. L. M.}
+      - {family: Lima, given: J. R. P.}
+      - {family: Peçanha, given: T.}
+    container-title: Clinical Physiology and Functional Imaging
+    volume: 35
+    issue: 2
+    page: 98-103
+    issued: {date-parts: [[2015]]}
+    DOI: 10.1111/cpf.12132
+  - id: joseph2023
+    type: article-journal
+    title: "Exponential modelling of heart rate recovery after a maximal exercise"
+    author:
+      - {family: Joseph, given: A.}
+      - {family: Kanthakumar, given: P.}
+      - {family: Tharion, given: E.}
+    container-title: Indian Journal of Physiology and Pharmacology
+    volume: 67
+    issue: 2
+    page: 125-130
+    issued: {date-parts: [[2023]]}
+    DOI: 10.25259/IJPP_122_2022
+---
+
+## Question 3.1
+
+### What mathematical models have been proposed to describe heart rate recovery?
+
+Heart rate recovery (HRR) after exercise is usually described with exponential decay models. The simplest is the first-order (mono-)exponential model,
+
+$$
+HR(t) = HR_{rest} + A \, e^{-t/\tau},
+$$
+
+where $A$ is the amplitude of the decay and $\tau$ is the time constant. The time constant from this fit has been used to assess cardiac autonomic recovery after endurance exercise, and Bartels-Ferreira et al. (2015) [@bartelsferreira2015] tested whether the same model also describes recovery after resistance exercise, using several fitting windows.
+
+A second option is the double-exponential model,
+
+$$
+HR(t) = HR_{rest} + A \, e^{-t/\tau_1} + B \, e^{-t/\tau_2},
+$$
+
+which has two time constants. Joseph et al. (2023) [@joseph2023] proposed that this model should describe recovery better than the single exponential because it captures both autonomic branches. They compared the two fits with $\chi^2$ values.
+
+A third approach treats recovery as two distinct phases and looks for the transition between them.Bartels et al. (2018)[@bartels2018] proposed a method to identify the time of the transition from the fast to the slow phase ($HRR_{PT}$), the HR drop before that point ($HRR_{FP}$) and the HR drop after it ($HRR_{SP}$).
+
+### What physiological mechanisms explain the decrease in heart rate after exercise?
+
+The decrease reflects the return of autonomic balance. Joseph et al. (2023) [@joseph2023] describe it as increased vagal activity combined with diminished sympathetic activity. They link the exponential shape to the kinetics of receptor action behind parasympathetic reactivation and sympathetic withdrawal. They also describe two systems, each following first-order kinetics with its own time constant, both acting on a single output, heart rate.
+
+Bartels et al. (2018) [@bartels2018] assign these mechanisms to different phases. The fast phase is an abrupt drop in HR determined by parasympathetic reactivation. The slow phase is a more gradual decline, in which sympathetic withdrawal also plays a role alongside continued vagal reactivation.
+
+### What are the expected characteristics of the recovery curve?
+
+I expect a steep initial decline followed by a progressive flattening toward baseline. The curve should be convex and decelerating, not linear. According to Bartels et al. (2018), [@bartels2018], it should contain two phases with a measurable transition point between them.
+
+The curve should also depend on exercise intensity. Bartels et al. (2018) [@bartels2018] found that the transition parameter ($HRR_{PT}$) was sensitive to exercise intensity, with high-intensity exercise producing a greater value than moderate-intensity exercise. They found it was only partially responsive to aerobic fitness. Because HR at the start of recovery is higher after harder exercise, comparing recoveries across intensities is not straightforward.
+
+Finally, the estimated parameters may depend on the time window analysed. Bartels-Ferreira et al. (2015) [@bartelsferreira2015] fitted the model over different windows, which implies the fitted time constant is not necessarily independent of window length.
+
+### Does the literature suggest that one mathematical model is sufficient for the entire recovery period?
+
+The literature suggests that a single model is probably not sufficient.Joseph et al. (2023) [@joseph2023] concluded that the double-exponential model was more inclusive and represented their data better than the single exponential, since it reflects the two autonomic mechanisms. Bartels et al. (2018) [@bartels2018] likewise treat recovery as having a fast and a slow phase rather than one uniform process.
+
+## Hypotheses about the model I expect to find
+
+**H1: 7.5-minute recording.** A double-exponential model will describe the data significantly better than a single exponential, with a lower RMSE or $\chi^2$. I expect a fast time constant $\tau_1$ of tens of seconds, linked to parasympathetic reactivation, and a slower $\tau_2$ of minutes, linked to sympathetic withdrawal (Joseph et al., 2023; Bartels et al., 2018) [@joseph2023; @bartels2018].
+
+**H2: three-hour recording.** The recovery will not be fully described by the model that fits the first minutes. I expect at least two phases, with a slower component or gradual drift toward baseline needed to describe the long tail. A single exponential should systematically under-fit it.
+
+**H3: dependence on the fitting window.** The time constant of a single-exponential fit will change depending on the window analysed (the first minutes versus the full three hours), consistent with the window effects examined by Bartels-Ferreira et al. (2015). [@bartelsferreira2015.]
+
+**H4: transition point.** A transition from a fast to a slow phase will be visible in the data. Residuals from a single-exponential fit will show a systematic, non-random pattern around this point (Bartels et al., 2018) [@bartels2018].
+
+**Null hypothesis:** A single exponential is sufficient to describe heart rate recovery. I will test this with residual plots and an information criterion such as AIC or BIC, not $R^2$ alone, because adding parameters always improves the fit.
+
+## References
+
+Bartels, R., Prodel, E., Laterza, M. C., Lima, J. R. P. de, & Peçanha, T. (2018). Heart rate recovery fast-to-slow phase transition: Influence of physical fitness and exercise intensity. *Annals of Noninvasive Electrocardiology, 23*(3), e12521. <https://doi.org/10.1111/anec.12521>
+
+Bartels-Ferreira, R., Sousa, É. D. de, Trevizani, G. A., Silva, L. P., Nakamura, F. Y., Forjaz, C. L. M., Lima, J. R. P., & Peçanha, T. (2015). Can a first-order exponential decay model fit heart rate recovery after resistance exercise? *Clinical Physiology and Functional Imaging, 35*(2), 98–103. <https://doi.org/10.1111/cpf.12132>
+
+Joseph, A., Kanthakumar, P., & Tharion, E. (2023). Exponential modelling of heart rate recovery after a maximal exercise. *Indian Journal of Physiology and Pharmacology, 67*(2), 125–130. <https://doi.org/10.25259/IJPP_122_2022>

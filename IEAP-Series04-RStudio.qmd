@@ -6,6 +6,8 @@ author:
   - "Charles Sam Deemua"
 date: "7 November 2026"
 format: "pdf"
+bibliography: references.bib
+csl: apa.csl
 ---
 
 # Introduction
@@ -31,12 +33,15 @@ The analyses combine statistical modelling, graphical representations, and physi
 
 ## 3.2 Data Exploration and Mathematical Modelling
 
-{{< include Subdocuments/Q3.2-Data-Analysis.qmd >}}
+{{< include Subdocuments/Q3.2-Data-Analysis-and-Model-Comparison.qmd >}}
 
-## 3.3 Model Comparison and Conclusions
+## 3.3 Comparison with Literature and Conclusions
 
-{{< include Subdocuments/Q3.3-Model-Comparison.qmd >}}
+{{< include Subdocuments/Q3.3-Conclusions-and-Literature-Comparison.qmd >}}
 
 # References
 
 The scientific references used throughout this report are listed below.
+
+::: {#refs}
+:::

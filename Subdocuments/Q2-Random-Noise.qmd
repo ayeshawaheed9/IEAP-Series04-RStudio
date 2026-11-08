@@ -1,5 +1,5 @@
 
-## Question 2: How Does Random Noise Affect Linear Regression?
+## How Does Random Noise Affect Linear Regression?
 
 ### 1. Formulate your expectations
 
@@ -285,7 +285,7 @@ kable(
 By repeating the experiment, I can reduce the influence of one particular random sample and observe the general effect of noise more clearly.
 
 
-### 3. Draw Conclusions
+### 10. Draw Conclusions
 
 After comparing the numerical results with my initial expectations, I found that most of them were confirmed. However, the repeated simulations helped me understand the effect of noise more clearly.
 

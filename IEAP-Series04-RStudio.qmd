@@ -21,10 +21,6 @@ The assignment is divided into two main investigations:
 
 The analyses combine statistical modelling, graphical representations, and physiological interpretation.
 
-# GitHub Repository
-
-[IEAP-Series04-RStudio on GitHub](https://github.com/ayeshawaheed9/IEAP-Series04-RStudio)
-
 # Question 2: Effect of Random Noise on Linear Regression
 
 {{< include Subdocuments/Q2-Random-Noise.qmd >}}
